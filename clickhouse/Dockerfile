@@ -20,9 +20,10 @@ COPY --from=assets /src/posthog/idl /opt/posthog/idl
 COPY --from=assets /src/posthog/user_scripts /opt/posthog/user_scripts
 COPY listen.xml /etc/clickhouse-server/config.d/zz-railway-listen.xml
 COPY railway-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
-# The cluster definitions dial the compose service name "clickhouse"; inside this container that is the server itself.
+# The cluster definitions dial the compose service name "clickhouse". PostHog's migrations read system.clusters and
+# dial those hosts from the web container, so the host must be the Railway private name, never loopback.
 # ZooKeeper lives in its own Railway service.
-RUN sed -i 's#<host>clickhouse</host>#<host>127.0.0.1</host>#g' /etc/clickhouse-server/config.d/default.xml \
+RUN sed -i 's#<host>clickhouse</host>#<host>clickhouse.railway.internal</host>#g' /etc/clickhouse-server/config.d/default.xml \
  && sed -i 's#<host>zookeeper</host>#<host>zookeeper.railway.internal</host>#' /etc/clickhouse-server/config.xml \
  && grep -q zookeeper.railway.internal /etc/clickhouse-server/config.xml \
  && ! grep -q '<host>clickhouse</host>' /etc/clickhouse-server/config.d/default.xml \
