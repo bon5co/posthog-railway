@@ -27,5 +27,5 @@ RUN sed -i 's#<host>clickhouse</host>#<host>127.0.0.1</host>#g' /etc/clickhouse-
  && grep -q zookeeper.railway.internal /etc/clickhouse-server/config.xml \
  && ! grep -q '<host>clickhouse</host>' /etc/clickhouse-server/config.d/default.xml \
  && chmod +x /usr/local/bin/railway-entrypoint.sh
-ENV CLICKHOUSE_SKIP_USER_SETUP=1
+ENV CLICKHOUSE_SKIP_USER_SETUP=1 KAFKA_HOSTS=kafka.railway.internal:9092
 ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
